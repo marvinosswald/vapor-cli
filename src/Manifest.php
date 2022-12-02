@@ -96,6 +96,18 @@ class Manifest
     }
 
     /**
+     * Get the Docker build arguments.
+     *
+     * @param  string  $environment
+     * @return array
+     */
+    public static function dockerCLIArgs($environment)
+    {
+        return static::current()['environments'][$environment]['docker-cli-args'] ?? [];
+    }
+
+
+    /**
      * Determine if the environment uses a database proxy.
      *
      * @param  string  $environment

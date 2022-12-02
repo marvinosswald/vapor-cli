@@ -20,7 +20,7 @@ class Docker
     public static function build($path, $project, $environment, $cliBuildArgs)
     {
         Process::fromShellCommandline(
-            static::buildCommand($project, $environment, $cliBuildArgs, Manifest::dockerBuildArgs($environment)),
+            static::buildCommand($project, $environment, $cliBuildArgs, Manifest::dockerBuildArgs($environment),Manifest::dockerCLIArgs($environment)),
             $path
         )->setTimeout(null)->mustRun(function ($type, $line) {
             Helpers::write($line);
@@ -36,9 +36,12 @@ class Docker
      * @param  array  $manifestBuildArgs
      * @return string
      */
-    public static function buildCommand($project, $environment, $cliBuildArgs, $manifestBuildArgs)
+    public static function buildCommand($project, $environment, $cliBuildArgs, $manifestBuildArgs, $manifestCLIArgs)
     {
-        return sprintf('docker build --pull --file=%s --tag=%s %s.',
+        return sprintf('docker build %s --pull --file=%s --tag=%s %s.',
+            $manifestCLIArgs->map(function ($value, $key) {
+                    return escapeshellarg("--{$key}={$value}");
+                })->implode(''),
             Manifest::dockerfile($environment),
             Str::slug($project).':'.$environment,
             Collection::make($manifestBuildArgs)
