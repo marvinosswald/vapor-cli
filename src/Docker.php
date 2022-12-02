@@ -39,7 +39,7 @@ class Docker
     public static function buildCommand($project, $environment, $cliBuildArgs, $manifestBuildArgs, $manifestCLIArgs)
     {
         return sprintf('docker build %s --pull --file=%s --tag=%s %s.',
-            $manifestCLIArgs->map(function ($value, $key) {
+            Collection::make($manifestCLIArgs)->map(function ($value, $key) {
                     return escapeshellarg("--{$key}={$value}");
                 })->implode(''),
             Manifest::dockerfile($environment),
