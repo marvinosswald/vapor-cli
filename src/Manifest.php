@@ -101,9 +101,9 @@ class Manifest
      * @param  string  $environment
      * @return array
      */
-    public static function dockerCLIArgs($environment)
+    public static function dockerCLIFlags($environment)
     {
-        return static::current()['environments'][$environment]['docker-cli-args'] ?? [];
+        return static::current()['environments'][$environment]['docker-cli-flags'] ?? [];
     }
 
 

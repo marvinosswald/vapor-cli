@@ -17,10 +17,10 @@ class Docker
      * @param  array  $cliBuildArgs
      * @return void
      */
-    public static function build($path, $project, $environment, $cliBuildArgs)
+    public static function build($path, $project, $environment, $cliBuildArgs, $dockerCLIFlags)
     {
         Process::fromShellCommandline(
-            static::buildCommand($project, $environment, $cliBuildArgs, Manifest::dockerBuildArgs($environment),Manifest::dockerCLIArgs($environment)),
+            static::buildCommand($project, $environment, $cliBuildArgs, Manifest::dockerBuildArgs($environment),$dockerCLIFlags),
             $path
         )->setTimeout(null)->mustRun(function ($type, $line) {
             Helpers::write($line);
@@ -36,10 +36,18 @@ class Docker
      * @param  array  $manifestBuildArgs
      * @return string
      */
-    public static function buildCommand($project, $environment, $cliBuildArgs, $manifestBuildArgs, $manifestCLIArgs)
+    public static function buildCommand($project, $environment, $cliBuildArgs, $manifestBuildArgs, $dockerCLIFlags)
     {
         return sprintf('docker build %s --pull --file=%s --tag=%s %s.',
-            Collection::make($manifestCLIArgs)->map(function ($value, $key) {
+            Collection::make(Manifest::dockerCLIFlags($environment))
+                ->merge(Collection::make($dockerCLIFlags)
+                    ->mapWithKeys(function ($value) {
+                        [$key, $value] = explode('=', $value, 2);
+
+                        return [$key => $value];
+                    })
+                )
+                ->map(function ($value, $key) {
                     return escapeshellarg("--{$key}={$value}");
                 })->implode(''),
             Manifest::dockerfile($environment),

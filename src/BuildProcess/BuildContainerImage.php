@@ -20,17 +20,27 @@ class BuildContainerImage
     protected $buildArgs;
 
     /**
+     * The Docker build flags.
+     *
+     * @var array
+     */
+    protected $cliFlags;
+
+    /**
      * Create a new project builder.
      *
      * @param  string|null  $environment
      * @param  array  $buildArgs
+     * @param  array  $cliFlags
      * @return void
      */
-    public function __construct($environment = null, $buildArgs = [])
+    public function __construct($environment = null, $buildArgs = [], $cliFlags = [])
     {
         $this->baseConstructor($environment);
 
         $this->buildArgs = $buildArgs;
+
+        $this->cliFlags = $cliFlags;
     }
 
     /**
@@ -46,7 +56,7 @@ class BuildContainerImage
 
         Helpers::step('<options=bold>Building Container Image</>');
 
-        Docker::build($this->appPath, Manifest::name(), $this->environment, $this->buildArgs);
+        Docker::build($this->appPath, Manifest::name(), $this->environment, $this->buildArgs, $this->cliFlags);
     }
 
     /**
