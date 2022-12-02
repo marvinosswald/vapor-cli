@@ -34,6 +34,7 @@ class DeployCommand extends Command
             ->addOption('without-waiting', null, InputOption::VALUE_NONE, 'Deploy without waiting for progress')
             ->addOption('fresh-assets', null, InputOption::VALUE_NONE, 'Upload a fresh copy of all assets')
             ->addOption('build-arg', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Docker build argument')
+            ->addOption('cli-flag', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Docker cli flags')
             ->setDescription('Deploy an environment');
     }
 
@@ -121,6 +122,7 @@ class DeployCommand extends Command
             '--asset-url' => $this->assetDomain($project).'/'.$uuid,
             '--manifest' => Path::manifest(),
             '--build-arg' => $this->option('build-arg'),
+            '--cli-flag' => $this->option('cli-flag')
         ]);
 
         return $this->uploadArtifact(
